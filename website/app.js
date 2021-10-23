@@ -9,7 +9,7 @@ const main = (function () {
     const apiKey  = '&appid=0bf63e809b8835825496df62f19ef7ad';
 
 
-    const getWeatherData = async (zipCode) => {
+    const fetchWeatherApi = async (zipCode) => {
         try {
             const res  = await fetch(baseURL + zipCode + apiKey + '&units=metric')
             const data = await res.json();
@@ -21,36 +21,8 @@ const main = (function () {
         }
     }
 
-    function getData () {
-        console.log('test start');
-        const zip       = document.getElementById('zip').value;
-        const feelings  = document.getElementById('feelings').value;
 
-        getWeatherData(zip)
-        .then(data => {
-            if (data) {
-                const {
-                    main : {temp}, name: city
-                } = data;
-
-                const info = {
-                    newDate, temp, feelings, city
-                }
-
-                updatingUI ();
-
-                postData(server + '/add' , info);
-
-
-                // document.getElementById('entry').style.opacity = 1;
-
-                // console.log('final :: ', data, temp);
-            }
-        });
-
-    }
-
-    const postData = async function (url = "", info = {}) {
+    const postReq = async function (url = "", info = {}) {
         const res = await fetch(url, {
             method : "POST",
             headers : {
@@ -66,24 +38,36 @@ const main = (function () {
             alert(error);
         }// end :: try
     }
+    
+    function main () {
+        console.log('test start');
 
-    const updatingUI = async function () {
-        const res = await fetch(server + '/all');
+        const zip       = document.querySelector('#zip').value;
+        const feelings  = document.querySelector('#feelings').value;
 
-        try {
-            const saveData = await res.json();
+        fetchWeatherApi(zip)
+        .then(data => {
+            if (data) {
+                const city = data.name , temp = data.main.temp;
+                
+                const info = {
+                    newDate, temp, feelings, city
+                }
 
-            document.getElementById('date').innerHTML       = saveData.newDate;
-            document.getElementById('temp').innerHTML       = saveData.temp;
-            document.getElementById('content').innerHTML    = saveData.feelings;
-            document.getElementById('city').innerHTML       = saveData.city;
-        } catch (error) {
-            console.log(error);
-        }
-    };
+                postReq(server + '/add' , info)
+                .then(data => {
+                    document.querySelector('#date').innerHTML       = data.newDate;
+                    document.querySelector('#temp').innerHTML       = data.temp;
+                    document.querySelector('#content').innerHTML    = data.feelings;
+                    document.querySelector('#city').innerHTML       = data.city;
+                });
+            }
+        });
 
+    }
+    
     function inite () {
-        document.getElementById('generate').addEventListener('click', getData);
+        document.getElementById('generate').addEventListener('click', main);
     }
 
     return {
