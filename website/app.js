@@ -1,5 +1,5 @@
 /* Global Variables */
-const main = (function () {
+const App = (function () {
     let d = new Date();
     // let newDate = d.getMonth()+'.'+ d.getDate()+'.'+ d.getFullYear();
     let newDate = d.toDateString();
