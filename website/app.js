@@ -21,7 +21,6 @@ const App = (function () {
         }
     }
 
-
     const postReq = async function (url = "", info = {}) {
         const res = await fetch(url, {
             method : "POST",
@@ -38,6 +37,22 @@ const App = (function () {
             alert(error);
         }// end :: try
     }
+
+    const updateUI = async function () {
+        fetch(`${server}/all`)
+        .then(res => res.json())
+        .then(data => {
+            try {
+                document.querySelector('#date').innerHTML       = data.newDate;
+                document.querySelector('#temp').innerHTML       = data.temp;
+                document.querySelector('#content').innerHTML    = data.feelings;
+                document.querySelector('#city').innerHTML       = data.city;
+            } catch (error) {
+                console.log("error", error);
+            }
+        });
+    }
+
     
     function main () {
         console.log('test start');
@@ -56,10 +71,7 @@ const App = (function () {
 
                 postReq(server + '/add' , info)
                 .then(data => {
-                    document.querySelector('#date').innerHTML       = data.newDate;
-                    document.querySelector('#temp').innerHTML       = data.temp;
-                    document.querySelector('#content').innerHTML    = data.feelings;
-                    document.querySelector('#city').innerHTML       = data.city;
+                    updateUI()
                 });
             }
         });
@@ -76,4 +88,4 @@ const App = (function () {
 })();
 
 
-main.inite();
+App.inite();
